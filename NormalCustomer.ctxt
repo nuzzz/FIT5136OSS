@@ -1,0 +1,4 @@
+#BlueJ class context
+comment0.params=id\ name\ username\ password\ email\ address\ cardNumber\ phoneNumber
+comment0.target=NormalCustomer(java.lang.String,\ java.lang.String,\ java.lang.String,\ java.lang.String,\ java.lang.String,\ java.lang.String,\ java.lang.String,\ java.lang.String)
+numComments=1

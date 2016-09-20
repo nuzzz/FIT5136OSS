@@ -1,0 +1,8 @@
+#BlueJ class context
+comment0.params=c\ p
+comment0.target=ProductThumbnail(ShopController,\ Product)
+comment1.params=e
+comment1.target=void\ actionPerformed(java.awt.event.ActionEvent)
+comment2.params=e
+comment2.target=void\ actionPerformed(java.awt.event.ActionEvent)
+numComments=3

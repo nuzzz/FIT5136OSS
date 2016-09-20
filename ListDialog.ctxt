@@ -1,0 +1,15 @@
+#BlueJ class context
+comment0.params=frameComp\ locationComp\ labelText\ title\ possibleValues\ initialValue\ longValue
+comment0.target=java.lang.String\ showDialog(java.awt.Component,\ java.awt.Component,\ java.lang.String,\ java.lang.String,\ java.lang.String[],\ java.lang.String,\ java.lang.String)
+comment0.text=\r\n\ Set\ up\ and\ show\ the\ dialog.\ \ The\ first\ Component\ argument\r\n\ determines\ which\ frame\ the\ dialog\ depends\ on;\ it\ should\ be\r\n\ a\ component\ in\ the\ dialog's\ controlling\ frame.\ The\ second\r\n\ Component\ argument\ should\ be\ null\ if\ you\ want\ the\ dialog\r\n\ to\ come\ up\ with\ its\ left\ corner\ in\ the\ center\ of\ the\ screen;\r\n\ otherwise,\ it\ should\ be\ the\ component\ on\ top\ of\ which\ the\r\n\ dialog\ should\ appear.\r\n
+comment1.params=newValue
+comment1.target=void\ setValue(java.lang.String)
+comment2.params=frame\ locationComp\ labelText\ title\ data\ initialValue\ longValue
+comment2.target=ListDialog(java.awt.Frame,\ java.awt.Component,\ java.lang.String,\ java.lang.String,\ java.lang.Object[],\ java.lang.String,\ java.lang.String)
+comment3.params=visibleRect\ orientation\ direction
+comment3.target=int\ getScrollableUnitIncrement(java.awt.Rectangle,\ int,\ int)
+comment4.params=e
+comment4.target=void\ mouseClicked(java.awt.event.MouseEvent)
+comment5.params=e
+comment5.target=void\ actionPerformed(java.awt.event.ActionEvent)
+numComments=6
