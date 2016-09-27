@@ -14,8 +14,8 @@ public class MaleClothing extends Clothing
        super();
    }
    
-   public MaleClothing(String size){
-       super();
+   public MaleClothing(String id, String name, Float price, String imagePath, String brand, String colour, String season, String size){
+       super(id, name, price, imagePath, brand, colour, season);
        this.size = size;
    }
    

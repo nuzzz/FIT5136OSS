@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  * Write a description of class Purchase here.
@@ -9,23 +11,39 @@ import java.util.Date;
  */
 public class Purchase
 {
+
+    private int id; 
     /**
-     * List of product and quantity
-     */
+     * List of product and quantity */
     private ArrayList<CartItem> items = new ArrayList<>();
     private Date purchaseDate;
     private String buyer;
     
-    public Purchase(ArrayList<CartItem> items, String username){
+    public SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    
+    public Purchase(){
+    }
+    
+    public Purchase(int id, ArrayList<CartItem> items, String username){
+        this.id = id;
         this.items = items;
         purchaseDate = new Date();
         this.buyer = username;
     }
     
-        public Purchase(ArrayList<CartItem> items, Date purchDate, String username){
+    public Purchase(int id, ArrayList<CartItem> items, Date purchDate, String username){
+		this.id = id;
         this.items = items;
         this.purchaseDate = purchDate;
         this.buyer = username;
+    }
+    
+    public int getId(){
+        return this.id;
+    }
+    
+    public void setId(int id){
+        this.id = id;
     }
     
     public ArrayList<CartItem> getItems(){
@@ -44,8 +62,24 @@ public class Purchase
         return buyer;
     }
     
-    //TODO: This is not implemented yet
+    public String toString(){
+        String res = "[Purchase " + getId() + "]\n" ;
+        res += "buyer: " + getBuyer() + "\n";
+        res += "purchase date: " + dateFormat.format(getPurchaseDate()) + "\n" ;
+        for(CartItem ci: getItems()){
+            res+= "item: " + ci.getProduct().getName() + " quantity: " +  ci.getQuantity() + "\n";
+        }
+        
+        res += "Purchase total: $" + totalForPurchase() + "\n"; 
+        
+        return res;
+    }
+    
     public float totalForPurchase(){
-        return -1f;
+        float total = 0f;
+        for(CartItem ci: getItems()){
+            total += ci.getProduct().getPrice() * ci.getQuantity();
+        }
+        return total;
     }
 }

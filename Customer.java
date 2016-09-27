@@ -36,22 +36,20 @@ public class Customer extends User{
     
     private boolean premiumStatus;
         
-    public Customer()
-    {
+    public Customer(){
+        super();
     }
     
-    public Customer(String id, String name, String username, String password, String email, String address, String phoneNumber){
-        super(id, name, username, password);
+    public Customer(String username, String password, String name, String email, String address, String phoneNumber){
+        super(username, password, name);
         this.email=email;
         this.address=address;
         this.phoneNumber=phoneNumber;
         premiumStatus = false;
     }
     
-        public Customer(String id, String name, String username, String password,
-                    String email, String address, String phoneNumber, String cardNumber
-                    ){
-        super(id, name, username, password);
+    public Customer(String username, String password, String name, String email, String address, String phoneNumber, String cardNumber){
+        super(username, password, name);
         this.email = email;
         this.address = address;
         this.cardNumber = cardNumber;
@@ -60,24 +58,13 @@ public class Customer extends User{
     }
     
     
-    public Customer(String id, String name, String username, String password,
-                    String email, String address, String cardNumber, 
-                    String phoneNumber, boolean premiumStatus){
-        super(id, name, username, password);
+    public Customer(String username, String password, String name, String email, String address, String phoneNumber, String cardNumber, boolean premiumStatus){
+        super(username, password, name);
         this.email = email;
         this.address = address;
-        this.cardNumber = cardNumber;
         this.phoneNumber = phoneNumber;
+        this.cardNumber = cardNumber;
         this.premiumStatus = premiumStatus;
-    }
-    
-    public Customer(String email, String address, String cardNumber, String phoneNumber){
-        super("1", "jon", "jon", "jon");
-        this.email = "abcd@email.com";
-        this.address = "123 real street";
-        this.cardNumber = "1234567890";
-        this.phoneNumber = "1234567890";
-        this.premiumStatus = false;
     }
     
     public String getEmail(){
@@ -92,8 +79,16 @@ public class Customer extends User{
         return this.address;
     }
     
-        public void setAddress(String address){
+    public void setAddress(String address){
         this.address = address;
+    }
+    
+    public String getPhoneNumber(){
+        return this.phoneNumber;
+    }
+    
+    public void setPhoneNumber(String phoneNumber){
+        this.phoneNumber = phoneNumber;
     }
     
     public String getCardNumber(){
@@ -102,14 +97,6 @@ public class Customer extends User{
     
     public void setCardNumber(String cardNumber){
         this.cardNumber = cardNumber;
-    }
-    
-    public String getPhoneNumber(){
-        return this.phoneNumber;
-    }
-    
-        public void setPhoneNumber(String phoneNumber){
-        this.phoneNumber = phoneNumber;
     }
     
     public boolean getPremiumStatus(){

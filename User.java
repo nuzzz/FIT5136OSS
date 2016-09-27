@@ -5,7 +5,6 @@
  * </pre>
  */
 public class User {
-    private String id;
     private String name;
     private String username;
     private String password;
@@ -13,19 +12,10 @@ public class User {
     public User(){
     }
     
-    public User(String newId, String newName, String newUsername, String newPassword){
-        this.id = newId;
-        this.name = newName;
+    public User(String newUsername, String newPassword, String newName){
         this.username = newUsername;
         this.password = newPassword;
-    }
-    
-    public String getId(){
-        return this.id;
-    }
-    
-    public void setId(String id){
-        this.id = id;
+        this.name = newName;    
     }
     
     public String getName(){
@@ -53,6 +43,6 @@ public class User {
     }
     
     public String toString(){
-        return "id: " + getId() + " " +"name: " + getName() + " " + "username: " + getUsername() + " " + "password: " + getPassword() + " ";
+        return "username: " + getUsername() + " " + "password: " + getPassword() + " " +  "name: " + getName() + " ";
     }
 }

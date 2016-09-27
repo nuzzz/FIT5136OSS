@@ -82,7 +82,7 @@ public class ShopController {
         this.backend = b;
         cart = new Cart();
         currentUser = "";
-        window.addWindowListener(new WindowAdapter() {
+        window.addWindowListener(new WindowAdapter(){
             @Override
             public void windowClosing(WindowEvent e){
                 //backend.saveDatabses();
@@ -153,8 +153,8 @@ public class ShopController {
     /**
      * @return The customer details received from the Model instance.
      */
-    public Customer getCurrentCustomerDetails(){
-        return getBackend().getUserInfo(getCurrentUser());
+    public Customer getCurrentUserDetails(){
+        return getBackend().getCustomerInfo(getCurrentUser());
     }
     
     public String getCurrentUser(){
@@ -236,8 +236,7 @@ public class ShopController {
     public void attemptLogin(String username, String password){
         if(backend.login(username, password)){
             setCurrentUser(username);
-//             System.out.println("Current user is: " + username);
-            //this.setView(new LoginView());
+            System.out.println("Current user is: " + username);
             showProductList();
         } else {
             showPopup("Login failed! Please ensure that your user ID and password are correct.");
@@ -260,7 +259,7 @@ public class ShopController {
      */
     public void updateUserDetails(Customer c){
         if(this.currentUser != null){
-            boolean success = getBackend().setUserInfo(this.currentUser, c);
+            boolean success = getBackend().setCustomerInfo(this.currentUser, c);
             if(!success){
                 showPopup("There was an error saving your information! Please try again later.");
             }
@@ -281,7 +280,7 @@ public class ShopController {
      * </pre>
      */
     public void showCheckout(){
-        ConfirmDialog.display(this);
+        ConfirmCheckoutDialog.display(this);
     }
     
     /**
@@ -337,37 +336,44 @@ public class ShopController {
      */
     public void attemptTransaction() {
         SimpleModel sm = (SimpleModel)getBackend();
+        Customer c = (Customer) sm.getUserFromDB(getCurrentUser());
+        if(c!=null){
+            String prefix = "Order failed! ";
+            if(c.getName().trim().equals("")){
+                showPopup(prefix + "You have not entered your full name!");
+                return;
+            }
+            else if(c.getAddress().trim().equals("")){
+                showPopup(prefix + "You have not entered your home address!");
+                return;
+            }
+            else if(c.getPhoneNumber().trim().equals("")){
+                showPopup(prefix + "You have not entered your phone number!");
+                return;
+            }
+            else if(c.getCardNumber().trim().equals("")){
+                showPopup(prefix + "You have not entered your card number!");
+                return;
+            }
+            else if(c.getEmail().trim().equals("")){
+                showPopup(prefix + "You have not entered your email!");
+                return;
+            }
         
-        Customer c = sm.getCustomerFromDB(getCurrentUser());
+            boolean success = getBackend().processOrder(getCurrentUser(), getCart());
         
-        //Customer c = getBackend().getUserInfo(currentUser);
-        String prefix = "Order failed! ";
-//         if(c.getName().trim().equals("")){
-//             showPopup(prefix + "You have not entered your full name!");
-//             return;
-//         }
-//         else if(c.getAddress().trim().equals("")){
-//             showPopup(prefix + "You have not entered your home address!");
-//             return;
-//         }
-//         else if(c.getPhoneNumber().trim().equals("")){
-//             showPopup(prefix + "You have not entered your phone number!");
-//             return;
-//         }
-//         else if(c.getCardNumber().trim().equals("")){
-//             showPopup(prefix + "You have not entered your card number!");
-//             return;
-//         }
-        
-        boolean success = getBackend().processOrder(getCurrentUser(), cart);
-        
-        if(!success){
-            showPopup("Sorry, your order could not be placed! Please ensure that all of your information is correct.");
+            if(!success){
+                showPopup("Sorry, your order could not be placed! Please ensure that all of your information is correct.");
+            }
+            else {
+                showPopup("Your order has been placed successfully! Have a nice day!");
+                this.cart.clear();
+                this.showCartView();
+            }
         }
-        else {
-            showPopup("Your order has been placed successfully! Have a nice day!");
-            this.cart.clear();
-            this.showCartView();
+        else{
+            showPopup("An error occured with transction");
+            return;
         }
     }
 }

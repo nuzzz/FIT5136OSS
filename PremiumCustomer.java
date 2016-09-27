@@ -9,10 +9,9 @@ public class PremiumCustomer extends Customer
 {
     private int credit;
     
-    public PremiumCustomer(String id, String name, String username, String password, 
-                           String email, String address, String cardNumber, 
-                           String phoneNumber){
-        super(id, name, username, password, email, address, cardNumber, phoneNumber, true);
+    public PremiumCustomer(String username, String password, String name, String email, String address, String phoneNumber, String cardNumber){
+        super(username, password, name, email, address, phoneNumber, cardNumber, true);
+        credit = 0;
     }
     
     public void addCredit(int amount){

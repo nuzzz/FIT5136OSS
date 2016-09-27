@@ -82,7 +82,7 @@ public interface Model {
 	 * @param username The id of the user.
 	 * @return A Customer object with the user's information.
 	 */
-	public Customer getUserInfo(String username);
+	public Customer getCustomerInfo(String username);
 	
 	/**
 	 * <pre>
@@ -95,8 +95,7 @@ public interface Model {
 	 * @param info The information to set.
 	 * @return Returns true if the operation succeeded, false otherwise.
 	 */
-	public boolean setUserInfo(String username, Customer info);
-	
+	public boolean setCustomerInfo(String username, Customer info);
 	
 	/**
 	 * <pre>

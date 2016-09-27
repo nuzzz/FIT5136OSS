@@ -7,9 +7,7 @@
  */
 public class NormalCustomer extends Customer
 {
-    public NormalCustomer(String id, String name, String username, String password, 
-                           String email, String address, String cardNumber, 
-                           String phoneNumber){
-        super(id, name, username, password, email, address, cardNumber, phoneNumber, false);
+    public NormalCustomer(String username, String password, String name, String email, String address, String phoneNumber , String cardNumber){
+        super(username, password, name, email, address, cardNumber, phoneNumber, false);
     }
 }

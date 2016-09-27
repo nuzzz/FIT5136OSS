@@ -10,18 +10,18 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-public class ConfirmDialog extends JDialog {
+public class ConfirmCheckoutDialog extends JDialog {
 
     private static final long serialVersionUID = 1L;
 
     public static void display(ShopController c){
-        ConfirmDialog dialog = new ConfirmDialog(c);
+        ConfirmCheckoutDialog dialog = new ConfirmCheckoutDialog(c);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.setLocationRelativeTo(c.getWindow());
         dialog.setVisible(true);
     }
     
-    public ConfirmDialog(ShopController c) {
+    public ConfirmCheckoutDialog(ShopController c) {
         JDialog dialog = this;
         setBounds(100, 100, 450, 300);
         getContentPane().setLayout(new BorderLayout());
@@ -69,12 +69,7 @@ public class ConfirmDialog extends JDialog {
                 JButton confirmButton = new JButton("Confirm order");
                 confirmButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                        if(c.getCurrentUser().equals("admin")){
-                            c.showPopup("Administrator cannot checkout");
-                            return;
-                        }else{
-                            c.attemptTransaction();
-                        }
+                        c.attemptTransaction();
                         dialog.dispose();
                     }
                 });

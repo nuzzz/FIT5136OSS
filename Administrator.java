@@ -8,6 +8,6 @@
 public class Administrator extends User
 {
     public Administrator(){
-        super("9000", "Administrator", "admin", "admin");
+        super("admin", "admin", "Administrator");
     }
 }

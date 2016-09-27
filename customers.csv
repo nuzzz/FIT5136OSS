@@ -1,5 +1,5 @@
-2,Linus,linus,linus,linus@gmail.com,123 real street,1.23457E+11,0411612381,0
-3,Alice,alice,alice,alice@hotmail.com,12 horton road,1.23478E+11,0411612382,0
-4,Bobby,bobby,bobby,bobby@yahoo.com,82 willow place,1E+12,0411612383,0
-5,Daniel,dantheman,daniel,daniel@gmail.co,46 mills point,1.11111E+11,0411612384,1
-6,Usama,usama,usama,usama@gmail.com,123 super street,7.77767E+15,0411612385,
+linus,linus,Linus,linus@gmail.com,123 real street,0411612381,123457812345678,true
+alice,alice,Alice,alice@hotmail.com,12 horton road,0412388732,123478987678213,true
+bobby,bobby,Bobby,bobby@yahoo.com,82 willow place,0411612383,111111111111111,true
+dantheman,daniel,Daniel,daniel@gmail.co,46 mills point,0411612384,1111222233334444,false
+usama,usama,Usama,usama@gmail.com,123 super street,0411612385,9435678212349999,false

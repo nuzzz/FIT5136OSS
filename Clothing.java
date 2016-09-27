@@ -12,20 +12,9 @@ public class Clothing extends Product
     private String season;
     
     public Clothing(){
-    }
-    
-    public Clothing(String id, String name, Float price, String imagePath){
-        super(id, name, price, imagePath);
-    }
-    
-    public Clothing(String brand, String colour, String season){
         super();
-        this.brand = brand;
-        this.colour = colour;
-        this.season = season;
     }
-    
-    
+  
     public Clothing(String id, String name, Float price, String imagePath, String brand, String colour, String season){
         super(id, name, price, imagePath);
         this.brand = brand;

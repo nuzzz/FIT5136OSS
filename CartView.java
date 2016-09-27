@@ -185,7 +185,12 @@ public class CartView extends View {
             });
             btnCheckout.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e){
-                    getController().showCheckout();
+                    if(getController().getCurrentUser().equals("admin")){
+                            getController().showPopup("Administrator cannot checkout");
+                            return;
+                    }else{
+                        getController().showCheckout();
+                    }
                 }
             });
             lblNetTotal.setText("$"+getController().getTotalCartPrice());       

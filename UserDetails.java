@@ -31,13 +31,15 @@ public class UserDetails extends JDialog {
 		dialog.setVisible(true);
 	}
 	
+	//not done
 	public Customer toCustomer(){
-		return new Customer(fullName.getText(), homeAddr.getText(), cardNum.getText(), phoneNumber.getText());
+	    //Customer(String username, String password, String name, String email, String address, String phoneNumber, String cardNumber)
+		//return new Customer(fullName.getText(), homeAddr.getText(), cardNum.getText(), phoneNumber.getText());
+		return new Customer();
 	}
 	
 	public UserDetails(ShopController c) {
-		
-		Customer user = c.getCurrentCustomerDetails();
+		Customer user = c.getCurrentUserDetails();
 		
 		setTitle("User Information");
 		setBounds(100, 100, 450, 300);
@@ -142,7 +144,7 @@ public class UserDetails extends JDialog {
 				okButton.setActionCommand("OK");
 				okButton.addActionListener(new ActionListener(){
 					public void actionPerformed(ActionEvent e) {
-						c.updateUserDetails(toCustomer());
+						//c.updateUserDetails(toCustomer());
 						me.dispose();
 					}
 				});
