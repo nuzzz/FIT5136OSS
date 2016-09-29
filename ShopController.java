@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 public class ShopController {
 
     /*
@@ -216,7 +217,7 @@ public class ShopController {
         boolean success = getBackend().signup(name, username, pass, email, address, phone, cardNumber);
         
         if(!success){
-            showPopup("Signup failed, that userID may already be in use!");
+            showPopup("Signup failed, that username may already be in use!");
         } else {
             showPopup("Your account has been created, please edit your details by clicking 'My account' in the top right.");
             this.setView(new LoginView());
@@ -244,10 +245,46 @@ public class ShopController {
     }
     
     public void logout(){
+        getCart().setItems(new ArrayList<CartItem>());
         setCurrentUser("");
         this.setView(new LoginView());
     }
     
+    public boolean verifyUserDetails(String fullName, String phone, String addr, String email, String cardNumber){
+        if(email.length() < 8){
+            showPopup("Your email must be at least 8 chars long!");
+            return false;
+        }
+        else if(addr.length() < 10){
+            showPopup("Your address must be at least 10 chars long!");
+            return false;
+        }
+        else if(phone.length() < 10){
+            showPopup("Your phone number must be at least 10 chars long!");
+            return false;
+        }
+        else if(cardNumber.length() < 12){
+            showPopup("Your phone number must be at least 12 chars long!");
+            return false;
+        }
+        return true;
+    }
+    
+    public boolean verifyPassword(String oldpw, String newpw, String newpw2){
+        String msg = "";
+        if(getCurrentUserDetails().getPassword().equals(oldpw)){
+            if (newpw2.equals(newpw)){
+                return true;
+            }else{
+                msg+="New passwords don't match\n";
+                showPopup(msg);
+            }
+        }else{
+            msg+="Old password incorrect";
+            showPopup(msg);
+        }
+        return false;
+    }
     
     /**
      * <pre>
@@ -260,8 +297,16 @@ public class ShopController {
     public void updateUserDetails(Customer c){
         if(this.currentUser != null){
             boolean success = getBackend().setCustomerInfo(this.currentUser, c);
-            if(!success){
-                showPopup("There was an error saving your information! Please try again later.");
+            if(success){
+                 showPopup("User details updated successfully");
+                 SimpleModel sm = (SimpleModel) getBackend();
+                 for(User u: sm.getUsers()){
+                     if (this.currentUser.equals(u.getUsername())){
+                         System.out.println(u);
+                     }
+                 }
+            }else{
+                 showPopup("There was an error saving your information! Please try again later.");
             }
         } else {
             System.err.println("Can't update user info, no one is signed in!");
@@ -328,6 +373,17 @@ public class ShopController {
     public void showProductList() {
         setView(new ProductListView());
     }
+    
+    /**
+     * <pre>
+     * Shows the product list view.
+     * </pre>
+     */
+    public void showUseCredit() {
+        CreditDialog.display(this);
+    }
+    
+    
 
     /**
      * <pre>

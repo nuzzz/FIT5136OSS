@@ -22,9 +22,12 @@ public class CartView extends View {
 
     private static final long serialVersionUID = 1L;
     
-    private JPanel scrollPanel;
-    private JButton btnClear, btnCheckout;
-    private JLabel lblNetTotal;
+    JPanel scrollPanel;
+    JButton btnClear;
+    JButton btnCheckout;
+    JButton btnLogout;
+    JButton btnUseCredit;
+    JLabel lblNetTotal;
 
     public CartView() {
 
@@ -49,11 +52,14 @@ public class CartView extends View {
         Component horizontalGlue = Box.createHorizontalGlue();
         panel.add(horizontalGlue);
         
-        JLabel lblTotal = new JLabel("Total:");
+        JLabel lblTotal = new JLabel("Total: ");
         panel.add(lblTotal);
         
         lblNetTotal = new JLabel();
         panel.add(lblNetTotal);
+        
+        btnLogout = new JButton("Logout");
+        panel.add(btnLogout);
         
         btnCheckout = new JButton("Checkout");
         panel.add(btnCheckout);
@@ -183,6 +189,11 @@ public class CartView extends View {
                     getController().showCartView();
                 }
             });
+            btnLogout.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent e) { 
+                    getController().logout();
+                }
+            });    
             btnCheckout.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e){
                     if(getController().getCurrentUser().equals("admin")){

@@ -19,7 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SimpleModel implements Model {
-    public final boolean DEBUG = false;    
+    public final boolean DEBUG = true;    
     
     private final String clothingPath = "clothing.csv";
     private final String customersPath = "customers.csv";
@@ -29,6 +29,7 @@ public class SimpleModel implements Model {
     ArrayList<User> userDB = new ArrayList<User>();
     ArrayList<Product> productDB = new ArrayList<Product>();
     ArrayList<Purchase> purchaseDB = new ArrayList<Purchase>();
+    ArrayList<StockItem> storeStock = new ArrayList<StockItem>();
     
     private int highestProductID;
     private int highestPurchaseID;
@@ -53,8 +54,26 @@ public class SimpleModel implements Model {
         userDB.add(admin);
     }
     
-    public List<Product> getProducts() {
+    public ArrayList<Product> getProducts() {
         return productDB;
+    }
+    
+    public ArrayList<StockItem> getStoreStock(){
+        return storeStock;
+    }
+    
+    public float getProductStock(Product p){
+        float stock = -1f;
+        for(StockItem item : storeStock){
+            if (p.getId().equals(item.getProduct().getId())){
+                stock = item.getQuantity();
+            }    
+        }
+        return stock;
+    }
+    
+    public ArrayList<User> getUsers() {
+        return userDB;
     }
     
     public Product getProductFromDB(String id){
@@ -113,7 +132,8 @@ public class SimpleModel implements Model {
     public boolean setCustomerInfo(String username, Customer info) {
         for(User u: userDB){
             if(username.equals(u.getUsername())){
-                u = info;
+                userDB.remove(u);
+                userDB.add(info);
                 return true;
             }
         }
@@ -150,8 +170,6 @@ public class SimpleModel implements Model {
             total += ((float) item.getProduct().getPrice() * item.quantity);
         return total;
     }
-    
-
 
     public boolean processOrder(String currentUserID, Cart cart) {
         return true;
@@ -206,11 +224,18 @@ public class SimpleModel implements Model {
                 System.out.println(p);
             }
             System.out.println();   
+            
+            System.out.println("Store Stock");
+            System.out.println("Number of items in store: " + purchaseDB.size());
+            for(StockItem p: storeStock){
+                System.out.println(p);
+            }
+            System.out.println();   
         }
         return true;
     }
     
-    //Not finished, in progress
+    //Completed
     public boolean saveDatabases() throws Exception{
         boolean productsSaved = false;
         boolean usersSaved = false;
@@ -256,6 +281,9 @@ public class SimpleModel implements Model {
                 //Clothing(String id, String name, Float price, String imagePath, String brand, String colour, String season)
                 Product p = new Clothing(line.get(0),line.get(1), Float.parseFloat(line.get(2)),line.get(3),line.get(4),line.get(5),line.get(6));
                 products.add(p);
+                float qty = Float.parseFloat(line.get(7));
+                StockItem stockItem = new StockItem(p, qty);
+                storeStock.add(stockItem);
             }
         }
         catch (IOException e) {
@@ -349,7 +377,8 @@ public class SimpleModel implements Model {
         
         return purchases;
     }
-
+    
+    //Completed and tested
     public boolean saveUserDB(String databasePath, ArrayList<User> users){
         //userDB        
         ArrayList<String> lines = new ArrayList<String>();
@@ -370,18 +399,29 @@ public class SimpleModel implements Model {
         }
         return true;
     }
-    
+
+    //Completed and tested
     public boolean saveProductDB(String databasePath, ArrayList<Product> products){
         //userDB        
         ArrayList<String> lines = new ArrayList<String>();
-        for(Product p: products){
+        for(StockItem item : getStoreStock()){
             String line = "";
             String comma = ",";
-            Clothing c = (Clothing) p;
+            Clothing c = (Clothing) item.getProduct();
             //Clothing(String id, String name, Float price, String imagePath, String brand, String colour, String season)
             line += c.getId() + comma +  c.getName() + comma + c.getPrice() + comma + c.getImagePath() + comma + c.getBrand() + comma + c.getColour() + comma + c.getSeason();
+            //Quantity is the last attribute on this line
+            line += comma + item.getQuantity();
             lines.add(line);
         }
+//         for(Product p: products){
+//             String line = "";
+//             String comma = ",";
+//             Clothing c = (Clothing) p;
+//             //Clothing(String id, String name, Float price, String imagePath, String brand, String colour, String season)
+//             line += c.getId() + comma +  c.getName() + comma + c.getPrice() + comma + c.getImagePath() + comma + c.getBrand() + comma + c.getColour() + comma + c.getSeason();
+//             lines.add(line);
+//         }
         try{
             Files.write(Paths.get(databasePath), lines);
         }catch (IOException e){
@@ -391,6 +431,7 @@ public class SimpleModel implements Model {
         return true;
     }
     
+    //Completed and tested
     public boolean savePurchaseDB(String databasePath, ArrayList<Purchase> purchases){
         ArrayList<String> lines = new ArrayList<String>();
         try{

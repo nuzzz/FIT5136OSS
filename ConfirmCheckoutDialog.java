@@ -78,6 +78,17 @@ public class ConfirmCheckoutDialog extends JDialog {
                 getRootPane().setDefaultButton(confirmButton);
             }
             {
+                JButton useCreditButton = new JButton("Use Credit");
+                //if c.getUser has credit
+                useCreditButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        c.showUseCredit();
+                    }
+                });
+                buttonPane.add(useCreditButton);
+            }
+            
+            {
                 JButton cancelButton = new JButton("Cancel");
                 cancelButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
