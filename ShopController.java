@@ -18,16 +18,26 @@ public class ShopController {
     
     /**
      * <pre>
+     * The image root folder
+     * </pre>
+     */
+    public static String IMAGE_FOLDER = "images/";
+    
+    /**
+     * <pre>
      * The default product icon.
      * </pre>
      */
-    public static ImageIcon NO_IMAGE_ICON = generateIcon("https://placeholdit.imgix.net/~text?txtsize=23&bg=ffffff&txtclr=000000&txt=No+Image&w=200&h=200", 150, 150);
+    //public static ImageIcon NO_IMAGE_ICON = generateIcon("https://placeholdit.imgix.net/~text?txtsize=23&bg=ffffff&txtclr=000000&txt=No+Image&w=200&h=200", 150, 150);
+	public static String NO_IMAGE_PATH = "no_image.png";
+    public static ImageIcon NO_IMAGE_ICON = generateIcon(IMAGE_FOLDER+NO_IMAGE_PATH, 150, 150);
     /**
      * <pre>
      * The store logo.
      * </pre>
      */
-    public static ImageIcon LOGO_ICON = new ImageIcon(ShopController.class.getResource("logo.png"));
+	public static String LOGO_PATH = "logo_final.png";
+    public static ImageIcon LOGO_ICON = new ImageIcon(ShopController.class.getResource(IMAGE_FOLDER+LOGO_PATH));
     /**
      * <pre>
      * The image cache that is used to save time and speed up loading.
@@ -47,17 +57,16 @@ public class ShopController {
     public static ImageIcon generateIcon(String imgLoc, int width, int height){
         if(IMAGE_CACHE == null)  IMAGE_CACHE = new HashMap<String, ImageIcon>();
         if(IMAGE_CACHE.containsKey(imgLoc)) return IMAGE_CACHE.get(imgLoc);
-        try {
-            URL url = new URL(imgLoc);
-            ImageIcon icon = new ImageIcon(new ImageIcon(url).getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT));
+        try{
+			String imagePath = IMAGE_FOLDER+imgLoc;
+            ImageIcon icon = new ImageIcon((new ImageIcon(ShopController.class.getResource(imagePath))).getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT));
             IMAGE_CACHE.put(imgLoc, icon);
             return icon;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+        } catch (Exception e) {
+            System.out.println("Problem loading image: " + e);
         }
+        return null;
     }
-    
     
     
     /*

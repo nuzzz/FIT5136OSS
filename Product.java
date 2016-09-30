@@ -41,6 +41,7 @@ public class Product {
         this.id = id;
         this.price = price;
         this.imagePath = imagePath;
+        setImage();
     }
     
     /**
@@ -50,8 +51,8 @@ public class Product {
      * </pre>
      * @param url The URL of the image, it will be loaded from the internet and resized.
      */
-    public void setImage(String url){
-        this.image = ShopController.generateIcon(url, 150, 150);
+    public void setImage(){
+        this.image = ShopController.generateIcon(this.imagePath, 150, 150);
     }
     
     /**

@@ -53,7 +53,7 @@ public class LoginView extends View {
         panel_5.add(panel_6);
         
         lblNewLabel = new JLabel();
-        //lblNewLabel.setIcon(ShopController.LOGO_ICON);
+        lblNewLabel.setIcon(ShopController.LOGO_ICON);
         panel_6.add(lblNewLabel);
         
         panel_4 = new JPanel();
