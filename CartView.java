@@ -24,10 +24,13 @@ public class CartView extends View {
     
     JPanel scrollPanel;
     JButton btnClear;
+    JButton btnBack;
     JButton btnCheckout;
-    JButton btnLogout;
+    JButton logoutButton;
     JButton btnUseCredit;
     JLabel lblNetTotal;
+    JLabel lblTotal;
+    JScrollPane scroll;
 
     public CartView() {
 
@@ -35,15 +38,10 @@ public class CartView extends View {
         
         JPanel panel = new JPanel();
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         add(panel, BorderLayout.NORTH);
         
-        JButton btnBack = new JButton("Back to products");
-        btnBack.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                getController().showProductList();
-            }
-        });
-        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        btnBack = new JButton("Back to products");
         panel.add(btnBack);
         
         btnClear = new JButton("Remove all from cart");
@@ -52,20 +50,20 @@ public class CartView extends View {
         Component horizontalGlue = Box.createHorizontalGlue();
         panel.add(horizontalGlue);
         
-        JLabel lblTotal = new JLabel("Total: ");
+        lblTotal = new JLabel("Total: ");
         panel.add(lblTotal);
         
         lblNetTotal = new JLabel();
         panel.add(lblNetTotal);
         
-        btnLogout = new JButton("Logout");
-        panel.add(btnLogout);
+        logoutButton = new JButton("Logout");
+        panel.add(logoutButton);
         
         btnCheckout = new JButton("Checkout");
         panel.add(btnCheckout);
 
         scrollPanel = new JPanel();
-        JScrollPane scroll = new JScrollPane(scrollPanel);
+        scroll = new JScrollPane(scrollPanel);
         scrollPanel.setLayout(new BoxLayout(scrollPanel, BoxLayout.Y_AXIS));
         
         scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -77,7 +75,7 @@ public class CartView extends View {
 
     public void initialize() {
         scrollPanel.removeAll();
-        if(getController().getCart().getList().size() == 0){
+        if(getController().getCart().getItems().size() == 0){
             JPanel panel = new JPanel();
             JLabel emptyCartMessageLabel = new JLabel("YOUR CART IS EMPTY");
             panel.add(emptyCartMessageLabel);
@@ -87,7 +85,7 @@ public class CartView extends View {
             scrollPanel.add(panel);
         }
         else{
-            for(CartItem item : getController().getCart().getList()){
+            for(CartItem item : getController().getCart().getItems()){
                 JPanel itemPanel = new JPanel();
                 itemPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
                 itemPanel.setAlignmentX(LEFT_ALIGNMENT);
@@ -97,14 +95,28 @@ public class CartView extends View {
                 itemPanel.add(titlePanel);
                 titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
                 
-                JLabel lblNewLabel_3 = new JLabel(item.product.getName());
-                lblNewLabel_3.setFont(new Font("Lucida Grande", Font.PLAIN, 20));
-                titlePanel.add(lblNewLabel_3);
+
+                Clothing c = (Clothing) item.getProduct();
+                JLabel lblProductName = new JLabel(c.getName()+ "       ");
+                lblProductName.setFont(new Font("Lucida Grande", Font.PLAIN, 20));
+                titlePanel.add(lblProductName);
+
+                JLabel lblProductBrand = new JLabel("Brand: " + c.getBrand()+ "       ");
+                titlePanel.add(lblProductBrand);
+
+                JLabel lblProductColour = new JLabel("Colour: " + c.getColour()+ "       ");
+                titlePanel.add(lblProductColour);
+
+                JLabel lblProductSeason = new JLabel("Season: " + c.getSeason()+ "       ");
+                titlePanel.add(lblProductSeason);
+
                 Component horizontalGlue_1 = Box.createHorizontalGlue();
                 titlePanel.add(horizontalGlue_1);
+
                 JPanel propertiesPanel = new JPanel();
                 itemPanel.add(propertiesPanel);
                 propertiesPanel.setLayout(new BoxLayout(propertiesPanel, BoxLayout.X_AXIS));
+
                 JPanel quantityPanel = new JPanel();
                 propertiesPanel.add(quantityPanel);
                 quantityPanel.setLayout(new BoxLayout(quantityPanel, BoxLayout.X_AXIS));
@@ -139,7 +151,7 @@ public class CartView extends View {
                 JLabel lblNewLabel4 = new JLabel("Update quantity: ");
                 quantityPanel.add(lblNewLabel4);
                 JTextField qtyTF = new JTextField();
-                qtyTF.setColumns(6);
+                qtyTF.setColumns(2);
                 qtyTF.setText("0"); 
                 qtyTF.setMaximumSize( qtyTF.getPreferredSize() );
                 quantityPanel.add(qtyTF);
@@ -149,19 +161,17 @@ public class CartView extends View {
                     public void actionPerformed(ActionEvent e) {
                         try{
                             int qty = Integer.parseInt(qtyTF.getText());
+                            if(qty == 0){
+                                getController().getCart().remove(item);
+                            }
                             if(qty < 0){
                                 getController().showPopup("Quantity must be greater than 0");
                                 return;
                             }
-                             //if(qty > 10){
-                             //    getController().showPopup("Quantity for each item is maximum 10");
-                             //    return;
-                             //}
-                            //update cart quantity for item
-                            item.setQuantity((float)qty);
+                            getController().modifyCartQuantity(item.getProduct(), (float)qty);
                         }
                         catch (NumberFormatException e2){
-                            getController().showPopup("Invalid quantity for update try again");
+                            getController().showPopup("Updated quantity must be a number try again");
                         }
                         getController().showCartView();
                     }
@@ -183,29 +193,38 @@ public class CartView extends View {
                 itemPanel.add(separator);
                 scrollPanel.add(itemPanel);
             }
-            btnClear.addActionListener(new ActionListener(){
-                public void actionPerformed(ActionEvent e) {
-                    getController().getCart().setItems(new ArrayList<CartItem>());
-                    getController().showCartView();
-                }
-            });
-            btnLogout.addActionListener(new ActionListener(){
-                public void actionPerformed(ActionEvent e) { 
-                    getController().logout();
-                }
-            });    
-            btnCheckout.addActionListener(new ActionListener(){
-                public void actionPerformed(ActionEvent e){
-                    if(getController().getCurrentUser().equals("admin")){
-                            getController().showPopup("Administrator cannot checkout");
-                            return;
-                    }else{
-                        getController().showCheckout();
-                    }
-                }
-            });
             lblNetTotal.setText("$"+getController().getTotalCartPrice());       
         }
+        btnBack.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                getController().showProductList();
+            }
+        });
+        btnClear.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                getController().getCart().setItems(new ArrayList<CartItem>());
+                getController().showCartView();
+            }
+        });
+        logoutButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) { 
+                getController().logout();
+            }
+        });
+        btnCheckout.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                if(getController().getCurrentUser().equals("admin")){
+                    getController().showPopup("Administrator cannot checkout");
+                    return;
+                }
+                else if(getController().getCart().getItems().size() == 0){
+                    getController().showPopup("Cannot checkout an empty cart");
+                }
+                else{
+                    getController().showCheckout();
+                }
+            }
+        });
         Component verticalGlue = Box.createVerticalGlue();
         scrollPanel.add(verticalGlue);
     }

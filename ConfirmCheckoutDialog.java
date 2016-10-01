@@ -41,7 +41,7 @@ public class ConfirmCheckoutDialog extends JDialog {
             {
                 String text = "<html>";
                 
-                for(CartItem item : c.getCart().getList()){
+                for(CartItem item : c.getCart().getItems()){
                     Cart thisItemInACart = new Cart();
                     thisItemInACart.add(item);
                     text += "Item: "+item.product.getName() +

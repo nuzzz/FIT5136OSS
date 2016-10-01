@@ -49,4 +49,8 @@ public class Clothing extends Product
     public String toString(){
         return super.toString() + "brand: " + getBrand() + " " +  "colour: " + getColour() + " " + "season: " + getSeason() + " ";
     }
+    
+    public String getSearchTerms(){
+        return super.getSearchTerms() + " " + getBrand() + " " + getColour() + " " + getSeason();
+    }
 }

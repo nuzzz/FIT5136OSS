@@ -142,7 +142,6 @@ public class ProductDetails extends JDialog {
                 okButton.addActionListener(new ActionListener(){
                     public void actionPerformed(ActionEvent e) {
                         c.addToCart(p, Float.parseFloat(spinner.getValue() + ""));
-                        c.showPopup("Added " + Float.parseFloat(spinner.getValue()+ "") + " to cart");
                         me.dispose();
                     }
                 });

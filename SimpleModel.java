@@ -1,8 +1,10 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -19,18 +21,22 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SimpleModel implements Model {
-    public final boolean DEBUG = true;    
+    public final boolean DEBUG = false;    
     
     private final String clothingPath = "clothing.csv";
     private final String customersPath = "customers.csv";
     private final String purchasesPath = "purchases.csv";
     private ArrayList<String> systemDatabaseList = new ArrayList<String>();
     
-    ArrayList<User> userDB = new ArrayList<User>();
-    ArrayList<Product> productDB = new ArrayList<Product>();
-    ArrayList<Purchase> purchaseDB = new ArrayList<Purchase>();
-    ArrayList<StockItem> storeStock = new ArrayList<StockItem>();
+    private ArrayList<User> userDB = new ArrayList<User>();
+    private ArrayList<Product> productDB = new ArrayList<Product>();
+    private ArrayList<Purchase> purchaseDB = new ArrayList<Purchase>();
+    private ArrayList<StockItem> storeStock = new ArrayList<StockItem>();
     
+    private Set<String> brands;
+    private Set<String> colours;
+    private Set<String> genders;
+    private Set<String> seasons;
     private int highestProductID;
     private int highestPurchaseID;
     
@@ -40,6 +46,11 @@ public class SimpleModel implements Model {
         systemDatabaseList.add(clothingPath);
         systemDatabaseList.add(customersPath);
         systemDatabaseList.add(purchasesPath);
+        brands = new HashSet<String>();
+        colours = new HashSet<String>();
+        genders = new HashSet<String>();
+        seasons = new HashSet<String>();
+        
         
         try{
             loadDatabases();
@@ -166,7 +177,7 @@ public class SimpleModel implements Model {
 
     public float getPrice(Cart cart) {
         float total = 0;
-        for(CartItem item : cart.getList()) 
+        for(CartItem item : cart.getItems()) 
             total += ((float) item.getProduct().getPrice() * item.quantity);
         return total;
     }
@@ -175,6 +186,20 @@ public class SimpleModel implements Model {
         return true;
     }
     
+    public Set<String> getBrands(){
+        return brands;
+    }
+    public Set<String> getColours(){
+        return colours;
+    }
+    public Set<String> getGenders(){
+        return genders;
+    }
+    public Set<String> getSeasons(){
+        return seasons;
+    }
+    
+    //Loading and saving db
     public boolean existDB(String databasePath){
         File tempFile = new File(databasePath);
         return tempFile.exists();
@@ -226,7 +251,7 @@ public class SimpleModel implements Model {
             System.out.println();   
             
             System.out.println("Store Stock");
-            System.out.println("Number of items in store: " + purchaseDB.size());
+            System.out.println("Number of items in store: " + storeStock.size());
             for(StockItem p: storeStock){
                 System.out.println(p);
             }
@@ -280,6 +305,11 @@ public class SimpleModel implements Model {
                 }
                 //Clothing(String id, String name, Float price, String imagePath, String brand, String colour, String season)
                 Product p = new Clothing(line.get(0),line.get(1), Float.parseFloat(line.get(2)),line.get(3),line.get(4),line.get(5),line.get(6));
+                brands.add(line.get(4));
+                colours.add(line.get(5));
+                seasons.add(line.get(6));
+                //TODO waiting for gender to be implmented
+                //genders.add(line.get(7));
                 products.add(p);
                 float qty = Float.parseFloat(line.get(7));
                 StockItem stockItem = new StockItem(p, qty);
@@ -456,6 +486,53 @@ public class SimpleModel implements Model {
         }catch (Exception e){
             System.out.println("Save Database error : " + e);
             return false;
+        }
+        return true;
+    }
+    // Loading and saving DB end
+    
+    //check quantity
+    public boolean addToCart(Cart cart, Product p, float addedQty) throws AddToCartException{
+        if(addedQty <= 0){
+            return false;
+        }
+        //look for item in store stock
+        for(StockItem item : getStoreStock()){
+            //item found
+            if(p.getId()==item.getProduct().getId()){
+                //fail add if item stock = 0
+                if(item.getQuantity()==0){
+                    throw new AddToCartException("Item stock is 0");          
+                }
+                //if product not in cart
+                if(!cart.inCart(p)){
+                    //fail if added quantity is greater than stock
+                    if(item.getQuantity()<addedQty){
+                        throw new AddToCartException("Not enough stock. Stock left: "+ item.getQuantity());
+                    }
+                }
+                //if product in cart
+                if(cart.inCart(p)){
+                    //fail add if item stock < cart.getQty(p)+addedQty 
+                    if(item.getQuantity()<cart.getQuantity(p)+addedQty){
+                        throw new AddToCartException("Not enough stock. Stock left: "+ (item.getQuantity()-cart.getQuantity(p)));
+                    }
+                }
+            }
+        }
+        return true;
+    }
+    
+    public boolean modifyCartQuantity(Cart cart, Product p, float updatedQty) throws ModifyCartException{
+        //look for item in store stock
+        for(StockItem item : getStoreStock()){
+            //item found
+            if(p.getId()==item.getProduct().getId()){
+                //check stock and updated quantity amount
+                if(item.getQuantity() < updatedQty){
+                    throw new ModifyCartException("Not enough stock. Stock for this item: " + item.getQuantity());
+                }
+            }
         }
         return true;
     }

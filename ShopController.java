@@ -2,6 +2,8 @@ import java.awt.Image;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -29,14 +31,14 @@ public class ShopController {
      * </pre>
      */
     //public static ImageIcon NO_IMAGE_ICON = generateIcon("https://placeholdit.imgix.net/~text?txtsize=23&bg=ffffff&txtclr=000000&txt=No+Image&w=200&h=200", 150, 150);
-	public static String NO_IMAGE_PATH = "no_image.png";
-    public static ImageIcon NO_IMAGE_ICON = generateIcon(IMAGE_FOLDER+NO_IMAGE_PATH, 150, 150);
+    public static String NO_IMAGE_PATH = "no_image.png";
+    public static ImageIcon NO_IMAGE_ICON = generateIcon(NO_IMAGE_PATH, 150, 150);
     /**
      * <pre>
      * The store logo.
      * </pre>
      */
-	public static String LOGO_PATH = "logo_final.png";
+    public static String LOGO_PATH = "logo_final.png";
     public static ImageIcon LOGO_ICON = new ImageIcon(ShopController.class.getResource(IMAGE_FOLDER+LOGO_PATH));
     /**
      * <pre>
@@ -58,7 +60,7 @@ public class ShopController {
         if(IMAGE_CACHE == null)  IMAGE_CACHE = new HashMap<String, ImageIcon>();
         if(IMAGE_CACHE.containsKey(imgLoc)) return IMAGE_CACHE.get(imgLoc);
         try{
-			String imagePath = IMAGE_FOLDER+imgLoc;
+            String imagePath = IMAGE_FOLDER+imgLoc;
             ImageIcon icon = new ImageIcon((new ImageIcon(ShopController.class.getResource(imagePath))).getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT));
             IMAGE_CACHE.put(imgLoc, icon);
             return icon;
@@ -75,11 +77,12 @@ public class ShopController {
     
     private JFrame window = new JFrame();
     private Model backend;
-    
+    private List<Product> searchProductList = new ArrayList<Product>(); 
     //current user details
     private Cart cart;
     //username of current user
     private String currentUser;
+    private String searchQuery;
     
     /**
      * <pre>
@@ -92,6 +95,7 @@ public class ShopController {
         this.backend = b;
         cart = new Cart();
         currentUser = "";
+        searchProductList = b.getProducts();
         window.addWindowListener(new WindowAdapter(){
             @Override
             public void windowClosing(WindowEvent e){
@@ -110,7 +114,11 @@ public class ShopController {
     public void setView(View view){
         view.setController(this);
         view.initialize();
+        window.getContentPane().removeAll();
+        window.repaint();
+        window.revalidate();
         window.setContentPane(view);
+        window.repaint();
         window.revalidate();
     }
     
@@ -124,8 +132,8 @@ public class ShopController {
     /**
      * @return The Model instance controlling the store.
      */
-    public Model getBackend(){
-        return this.backend;
+    public SimpleModel getBackend(){
+        return (SimpleModel) this.backend;
     }
     
     /**
@@ -351,8 +359,48 @@ public class ShopController {
      * @param p The product
      * @param quantity The quantity to add
      */
-    public void addToCart(Product p, float quantity){
-        cart.add(p, quantity);
+    public void addToCart(Product p, float qty){
+        //fail if addedQty is negative or zero
+        if(qty<=0){
+            showPopup("Added quantity cannot be 0 or negative");
+            return;
+        }
+        try{
+            if(getBackend().addToCart(cart, p, qty)){
+                cart.add(p, qty);
+                showPopup("Added " + qty + " of " +  p.getName() + " to Cart");
+            }else{
+                showPopup("Failed to add to cart");
+            }
+        }catch(AddToCartException e){
+            showPopup(e.getMessage());
+            return;
+        }
+    }
+    
+    public void modifyCartQuantity(Product p, float qty){
+        //fail if updateQty is negative
+        if(qty<0){
+            showPopup("Updated quantity cannot be negative");
+            return;
+        }
+        else if(qty==0){
+            showPopup("Item removed");
+            return;
+        }
+        else{
+            try{
+                if(getBackend().modifyCartQuantity(cart, p, qty)){
+                    cart.setQuantity(p, qty);
+                    showPopup("Cart updated: " + qty + " of " +  p.getName() + " to Cart");
+                }else{
+                    showPopup("Failed to modify cart");
+                }
+            }catch(ModifyCartException e){
+                showPopup(e.getMessage());
+                return;
+            }
+        }
     }
     
     /**
@@ -383,6 +431,38 @@ public class ShopController {
         setView(new ProductListView());
     }
     
+    public ArrayList<Product> searchProductList(String searchQuery){
+        ArrayList<Product> results = new ArrayList<Product>();
+        for(Product item: getBackend().getProducts()){
+            if(item.getSearchTerms().contains(searchQuery)){
+                results.add(item);
+            }
+        }
+        return results;
+    }
+    
+    public List<Product> getSearchProductList(){
+        return this.searchProductList;
+    }
+    
+    public void setSearchProductList(List<Product> newProductList){   
+        this.searchProductList = newProductList;
+    }
+    
+    public void resetSearchProductList(){
+        this.searchProductList = getBackend().getProducts();
+    }
+    
+    public void setSearchQuery(String s){
+        this.searchQuery = s;
+    }
+    
+    public String getSearchQuery(){
+        return this.searchQuery;
+    }
+
+    
+    
     /**
      * <pre>
      * Shows the product list view.
@@ -392,15 +472,13 @@ public class ShopController {
         CreditDialog.display(this);
     }
     
-    
-
     /**
      * <pre>
      * Attempts a transaction using the current user's details and the current cart.
      * </pre>
      */
     public void attemptTransaction() {
-        SimpleModel sm = (SimpleModel)getBackend();
+        SimpleModel sm = getBackend();
         Customer c = (Customer) sm.getUserFromDB(getCurrentUser());
         if(c!=null){
             String prefix = "Order failed! ";

@@ -191,11 +191,17 @@ public class Product {
      * @return The image associated with this product
      */
     public ImageIcon getImage(){
-        if(this.image == null) return ShopController.NO_IMAGE_ICON;
-        else return this.image;
+        if(this.image == null) 
+            return ShopController.NO_IMAGE_ICON;
+        else 
+            return this.image;
     }
     
     public String toString(){
         return "id: " + getId() + " " + "name: " + getName() + " " + "price: " + this.price + " " + "imagePath: " + this.imagePath + " ";
+    }
+    
+    public String getSearchTerms(){
+        return getName(); 
     }
 }
