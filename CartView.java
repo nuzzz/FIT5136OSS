@@ -152,8 +152,8 @@ public class CartView extends View {
                 quantityPanel.add(lblNewLabel4);
                 JTextField qtyTF = new JTextField();
                 qtyTF.setColumns(2);
-                qtyTF.setText("0"); 
-                qtyTF.setMaximumSize( qtyTF.getPreferredSize() );
+                qtyTF.setText("1"); 
+                qtyTF.setMaximumSize(qtyTF.getPreferredSize() );
                 quantityPanel.add(qtyTF);
     
                 JButton btnUpdateCart = new JButton("Update cart");

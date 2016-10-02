@@ -96,12 +96,11 @@ public class ProductListView extends View {
             adminToolsButton = new JButton("AdminTools");
             adminToolsButton.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e) {
-                    //AdminTools.display(getController());
+                    AdminTools.display(getController());
                 }
             });
             main_panel.add(adminToolsButton);
         }else{
-            
             myInfoButton = new JButton("My account");
             myInfoButton.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e) {

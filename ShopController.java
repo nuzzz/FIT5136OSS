@@ -78,6 +78,7 @@ public class ShopController {
     private JFrame window = new JFrame();
     private Model backend;
     private List<Product> searchProductList = new ArrayList<Product>(); 
+    private List<Purchase> searchPurchaseList = new ArrayList<Purchase>();
     //current user details
     private Cart cart;
     //username of current user
@@ -96,6 +97,7 @@ public class ShopController {
         cart = new Cart();
         currentUser = "";
         searchProductList = b.getProducts();
+        //searchPurchaseList = b.getPurchases();
         window.addWindowListener(new WindowAdapter(){
             @Override
             public void windowClosing(WindowEvent e){
@@ -429,6 +431,10 @@ public class ShopController {
      */
     public void showProductList() {
         setView(new ProductListView());
+    }
+    
+    public void showPurchases(){
+        setView(new PurchaseTableView());
     }
     
     public ArrayList<Product> searchProductList(String searchQuery){

@@ -87,6 +87,10 @@ public class SimpleModel implements Model {
         return userDB;
     }
     
+    public ArrayList<Purchase> getPurchases(){
+        return purchaseDB;
+    }
+    
     public Product getProductFromDB(String id){
         for(Product p: productDB){
             if(p.getId().equals(id))
