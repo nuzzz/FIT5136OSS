@@ -75,6 +75,8 @@ public class ShopController {
      * END STATIC
      */
     
+
+    
     private JFrame window = new JFrame();
     private Model backend;
     private List<Product> searchProductList = new ArrayList<Product>(); 
@@ -83,7 +85,16 @@ public class ShopController {
     private Cart cart;
     //username of current user
     private String currentUser;
-    private String searchQuery;
+    private String productSearchQuery;
+    private String purchaseSearchQuery;
+    
+    /**
+     *  Search type for purchase
+     */
+    public enum PurchaseSearchType{
+        USER_USERNAME,
+        PRODUCT_NAME
+    };
     
     /**
      * <pre>
@@ -96,8 +107,8 @@ public class ShopController {
         this.backend = b;
         cart = new Cart();
         currentUser = "";
-        searchProductList = b.getProducts();
-        //searchPurchaseList = b.getPurchases();
+        searchProductList = getBackend().getProducts();
+        createPurchaseReport();
         window.addWindowListener(new WindowAdapter(){
             @Override
             public void windowClosing(WindowEvent e){
@@ -256,7 +267,6 @@ public class ShopController {
     public void attemptLogin(String username, String password){
         if(backend.login(username, password)){
             setCurrentUser(username);
-            System.out.println("Current user is: " + username);
             showProductList();
         } else {
             showPopup("Login failed! Please ensure that your user ID and password are correct.");
@@ -264,9 +274,15 @@ public class ShopController {
     }
     
     public void logout(){
+        reset();
+        this.setView(new LoginView());
+    }
+    
+    public void reset(){
         getCart().setItems(new ArrayList<CartItem>());
         setCurrentUser("");
-        this.setView(new LoginView());
+        resetSearchProductList();
+        
     }
     
     public boolean verifyUserDetails(String fullName, String phone, String addr, String email, String cardNumber){
@@ -459,14 +475,69 @@ public class ShopController {
         this.searchProductList = getBackend().getProducts();
     }
     
-    public void setSearchQuery(String s){
-        this.searchQuery = s;
+    public void setPurchaseSearchQuery(String s){
+        this.purchaseSearchQuery = s;
     }
     
-    public String getSearchQuery(){
-        return this.searchQuery;
+    public String getPurchaseSearchQuery(){
+        return this.purchaseSearchQuery;
     }
-
+    
+    public void setSearchPurchaseList(List<Purchase> newPurchaseList){
+        this.searchPurchaseList = newPurchaseList;
+    }
+    
+    public List<Purchase> getSearchPurchaseList(){
+        return this.searchPurchaseList;
+    }
+    
+    public void resetSearchPurchaseList(){
+        createPurchaseReport();
+    }
+    
+        public void setProductSearchQuery(String s){
+        this.productSearchQuery = s;
+    }
+    
+    public String getProductSearchQuery(){
+        return this.productSearchQuery;
+    }
+ 
+    public ArrayList<Purchase> searchPurchaseList(String searchQuery, PurchaseSearchType pst){
+        ArrayList<Purchase> results = new ArrayList<Purchase>();
+        for(Purchase purch: getSearchPurchaseList()){
+            switch (pst){
+                case USER_USERNAME:
+                    if(purch.getBuyer().contains(searchQuery)){
+                        results.add(purch);
+                    }
+                    break;
+                case PRODUCT_NAME:
+                    if(purch.getItems().get(0).getProduct().getName().contains(searchQuery)){
+                        results.add(purch);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        return results;
+    }
+    
+    public void createPurchaseReport(){
+        ArrayList<Purchase> purchases = getBackend().getPurchases();
+        ArrayList<Purchase> purchasesTableFormat = new ArrayList<Purchase>();
+        for(Purchase p : purchases){
+            for(CartItem ci: p.getItems()){
+                //Purchase(int id, ArrayList<CartItem> items, Date purchDate, String username)
+                ArrayList<CartItem> tempItemList = new ArrayList<CartItem>();
+                tempItemList.add(ci);
+                Purchase newPurchase =  new Purchase(p.getId(), tempItemList, p.getPurchaseDate(), p.getBuyer());
+                purchasesTableFormat.add(newPurchase);
+            }
+        }
+        searchPurchaseList = purchasesTableFormat;
+    }
     
     
     /**

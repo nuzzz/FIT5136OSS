@@ -113,7 +113,7 @@ public class ProductListView extends View {
         lblWelcomeMsg.setText("Welcome " + getController().getCurrentUser());
         
         productList = getController().getSearchProductList();
-        searchMessage.setText(getController().getSearchQuery());
+        searchMessage.setText(getController().getProductSearchQuery());
         
         if(productList.size()==0){
             JLabel noResultLabel = new JLabel("No results");
@@ -153,7 +153,7 @@ public class ProductListView extends View {
             public void actionPerformed(ActionEvent e){
                 ArrayList<Product> res = getController().searchProductList((String)searchCB.getSelectedItem()); 
                 String item = (String) searchCB.getSelectedItem();
-                getController().setSearchQuery("Searching for " + item + "... ");
+                getController().setProductSearchQuery("Searching for " + item + "... ");
                 getController().setSearchProductList(res);
                 getController().showProductList();
                 revalidate();
@@ -165,7 +165,7 @@ public class ProductListView extends View {
             public void actionPerformed(ActionEvent e) {
                 ArrayList<Product> res = getController().searchProductList(searchTF.getText());
                 String item = searchTF.getText();
-                getController().setSearchQuery("Searching for " + item + "... ");
+                getController().setProductSearchQuery("Searching for " + item + "... ");
                 getController().setSearchProductList(res);
                 getController().showProductList();
                 revalidate();

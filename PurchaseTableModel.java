@@ -19,7 +19,6 @@ public class PurchaseTableModel extends RowTableModel<Purchase>
     PurchaseTableModel(){
         super(Arrays.asList(COLUMN_NAMES));
         setRowClass(Purchase.class);
-    
         setColumnClass(0, Date.class);
         setColumnClass(1, String.class);
         setColumnClass(2, Integer.class);
@@ -65,5 +64,11 @@ public class PurchaseTableModel extends RowTableModel<Purchase>
         }
 
         fireTableCellUpdated(row, column);
+    }
+    
+    @Override
+    public boolean isCellEditable(int row, int column) {
+       //all cells false
+       return false;
     }
 }
