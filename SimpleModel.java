@@ -54,7 +54,6 @@ public class SimpleModel implements Model {
         
         try{
             loadDatabases();
-            saveDatabases();
         }
         catch (Exception e){
             System.out.println("Error occured: " + e);
@@ -160,7 +159,8 @@ public class SimpleModel implements Model {
     }
     
     public int getNextProductID(){
-        return this.highestProductID+1;
+        this.highestProductID=+1;
+        return highestProductID;
     }
     
     public void setHighestProductID(int newID){
@@ -172,7 +172,8 @@ public class SimpleModel implements Model {
     }
     
     public int getNextPurchaseID(){
-        return this.highestPurchaseID+1;
+        highestPurchaseID+=1;
+        return highestPurchaseID;
     }
     
     public void setHighestPurchaseID(int newID){
@@ -186,7 +187,29 @@ public class SimpleModel implements Model {
         return total;
     }
 
-    public boolean processOrder(String currentUserID, Cart cart) {
+    public boolean addItem(){
+        return true;
+    }
+    
+    public boolean processOrder(String currentUserID, ArrayList<CartItem> items) {
+        //Purchase(int id, ArrayList<CartItem> items, String username)
+        ArrayList<CartItem> cloneItems = new ArrayList<CartItem>();
+        for(CartItem ci: items){
+            cloneItems.add(ci);
+        }
+        
+        for(CartItem ci2: cloneItems){
+            for(StockItem si: getStoreStock()){
+                if(ci2.getProduct().getId()==si.getProduct().getId()){
+                    si.setQuantity(si.getQuantity()-ci2.getQuantity());
+                }
+            }
+        }
+        Purchase p = new Purchase(getNextPurchaseID(), cloneItems, currentUserID);
+        purchaseDB.add(p);
+        System.out.println(items);
+        System.out.println(p.getItems());
+        System.out.println(purchaseDB);
         return true;
     }
     
@@ -419,11 +442,13 @@ public class SimpleModel implements Model {
         for(User u: users){
             String line = "";
             String comma = ",";
-            Customer c = (Customer) u;
-            //Customer(String username, String password, String name, String email, String address, String phoneNumber, String cardNumber, boolean premiumStatus)
-            line += c.getUsername() + comma +  c.getPassword() + comma +  c.getName() + comma +  c.getEmail() + comma  +  c.getAddress() + comma
-                         + c.getPhoneNumber() + comma  +  c.getCardNumber() + comma  +  c.getPremiumStatus();
-            lines.add(line);
+            if(!"admin".equals(u.getUsername())){
+                Customer c = (Customer) u;
+                //Customer(String username, String password, String name, String email, String address, String phoneNumber, String cardNumber, boolean premiumStatus)
+                line += c.getUsername() + comma +  c.getPassword() + comma +  c.getName() + comma +  c.getEmail() + comma  +  c.getAddress() + comma
+                             + c.getPhoneNumber() + comma  +  c.getCardNumber() + comma  +  c.getPremiumStatus();
+                lines.add(line);
+            }
         }
         try{
             Files.write(Paths.get(databasePath), lines);
@@ -478,9 +503,11 @@ public class SimpleModel implements Model {
                 
                 //purchid, date, buyer, id, qty, id2, qty2, id3, qty3, ...
                 line += p.getId() + comma + newDate + comma + p.getBuyer();
+                System.out.println("Before: " + line);
                 for(CartItem cartitem : p.getItems()){
                     line += comma + cartitem.getProduct().getId() + comma + cartitem.getQuantity();
                 }
+                System.out.println("After: " + line);
                 lines.add(line);
             }
             Files.write(Paths.get(databasePath), lines);

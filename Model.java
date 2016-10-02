@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * <pre>
@@ -110,5 +111,5 @@ public interface Model {
 	 * @param cart The cart full of items that the user wishes to buy.
 	 * @return True if the order was successful, false otherwise.
 	 */
-	public boolean processOrder(String currentUserID, Cart cart);
+	public boolean processOrder(String currentUserID, ArrayList<CartItem> items);
 }

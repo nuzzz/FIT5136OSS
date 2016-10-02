@@ -45,7 +45,7 @@ public class Cart {
      * </pre>
      * @return The list of CartItems
      */
-    public List<CartItem> getItems(){
+    public ArrayList<CartItem> getItems(){
         return items;
     }
     
