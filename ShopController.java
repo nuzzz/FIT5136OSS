@@ -162,7 +162,7 @@ public class ShopController {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setLocationRelativeTo(null);
         window.setVisible(true);
-        this.setView(new LoginView2());
+        this.setView(new LoginView());
     }
     
     /**

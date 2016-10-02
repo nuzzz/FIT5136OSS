@@ -97,7 +97,7 @@ public class PurchaseTableView extends View {
         ptm = new PurchaseTableModel();
         table = new JTable(ptm);
 
-        table.getColumnModel().getColumn(0).setCellRenderer(FormatRenderer.getDateTimeRenderer());
+        //table.getColumnModel().getColumn(0).setCellRenderer(FormatRenderer.getDateTimeRenderer());
         table.getColumnModel().getColumn(7).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         table.getColumnModel().getColumn(8).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         
