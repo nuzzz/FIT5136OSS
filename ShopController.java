@@ -340,12 +340,6 @@ public class ShopController {
             boolean success = getBackend().setCustomerInfo(this.currentUser, c);
             if(success){
                  showPopup("User details updated successfully");
-                 SimpleModel sm = (SimpleModel) getBackend();
-                 for(User u: sm.getUsers()){
-                     if (this.currentUser.equals(u.getUsername())){
-                         System.out.println(u);
-                     }
-                 }
             }else{
                  showPopup("There was an error saving your information! Please try again later.");
             }

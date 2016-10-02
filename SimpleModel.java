@@ -207,9 +207,6 @@ public class SimpleModel implements Model {
         }
         Purchase p = new Purchase(getNextPurchaseID(), cloneItems, currentUserID);
         purchaseDB.add(p);
-        System.out.println(items);
-        System.out.println(p.getItems());
-        System.out.println(purchaseDB);
         return true;
     }
     
@@ -386,6 +383,7 @@ public class SimpleModel implements Model {
             for(List<String> line: readLines){
                 try{
                     newId = Integer.parseInt(line.get(0));
+                    System.out.println(newId);
                 }catch (NumberFormatException e){
                     System.out.println("Load purchase: Error parsing id number, " + line.get(0) + " not an integer");
                 }
@@ -503,11 +501,9 @@ public class SimpleModel implements Model {
                 
                 //purchid, date, buyer, id, qty, id2, qty2, id3, qty3, ...
                 line += p.getId() + comma + newDate + comma + p.getBuyer();
-                System.out.println("Before: " + line);
                 for(CartItem cartitem : p.getItems()){
                     line += comma + cartitem.getProduct().getId() + comma + cartitem.getQuantity();
                 }
-                System.out.println("After: " + line);
                 lines.add(line);
             }
             Files.write(Paths.get(databasePath), lines);
