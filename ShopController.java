@@ -100,8 +100,14 @@ public class ShopController {
         //searchPurchaseList = b.getPurchases();
         window.addWindowListener(new WindowAdapter(){
             @Override
-            public void windowClosing(WindowEvent e){
-                //backend.saveDatabses();
+            public void windowClosing(WindowEvent event){
+                try{
+                    getBackend().saveDatabases();
+                }
+                catch (Exception e){
+                    showPopup("Error saving databases: "+ e);
+                }
+
                 System.out.println("Window closing pressed");
             }
         });
@@ -484,8 +490,7 @@ public class ShopController {
      * </pre>
      */
     public void attemptTransaction() {
-        SimpleModel sm = getBackend();
-        Customer c = (Customer) sm.getUserFromDB(getCurrentUser());
+        Customer c = (Customer) getBackend().getUserFromDB(getCurrentUser());
         if(c!=null){
             String prefix = "Order failed! ";
             if(c.getName().trim().equals("")){
@@ -509,7 +514,7 @@ public class ShopController {
                 return;
             }
         
-            boolean success = getBackend().processOrder(getCurrentUser(), getCart());
+            boolean success = getBackend().processOrder(getCurrentUser(), getCart().getItems());
         
             if(!success){
                 showPopup("Sorry, your order could not be placed! Please ensure that all of your information is correct.");
