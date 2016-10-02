@@ -13,10 +13,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.ButtonGroup;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
@@ -31,17 +28,7 @@ public class PurchaseTableView extends View {
     
     private JLabel titleLabel;
     private JLabel totalForTableLabel;
-    private JTextField searchTF;
     
-    private JLabel userLabel;
-    private JLabel itemNameLabel;
-    private JRadioButton userRB;
-    private JRadioButton itemNameRB;
-    private ButtonGroup buttonGroup;
-    
-    private JLabel searchMessageLabel;
-    
-    private JButton btnFilter;
     private JButton btnReset;
     private JButton btnLogout;
     private JButton btnBack;
@@ -61,43 +48,19 @@ public class PurchaseTableView extends View {
         titleLabel = new JLabel("Purchase history");
         topPanel.add(titleLabel);
         
-        searchTF = new JTextField();
-        searchTF.setColumns(10);
-        topPanel.add(searchTF);
-        
-        userRB = new JRadioButton();
-        userRB.setSelected(true);
-        topPanel.add(userRB);
-        userLabel = new JLabel("Username");
-        topPanel.add(userLabel);
-       
-
-        itemNameRB = new JRadioButton();        
-        topPanel.add(itemNameRB);
-        itemNameLabel = new JLabel("Item name");
-        topPanel.add(itemNameLabel);
- 
-        buttonGroup = new ButtonGroup();
-        buttonGroup.add(userRB);
-        buttonGroup.add(itemNameRB);
-        
-        btnFilter = new JButton("Filter");
-        topPanel.add(btnFilter);
-        
-        btnReset = new JButton("Reset");
-        topPanel.add(btnReset);
-        
         btnBack = new JButton("Back to products");
         topPanel.add(btnBack);
         
         btnLogout = new JButton("Logout");
         topPanel.add(btnLogout);
         
+        btnReset = new JButton("Reset");
+        topPanel.add(btnReset);
         
         ptm = new PurchaseTableModel();
         table = new JTable(ptm);
 
-        //table.getColumnModel().getColumn(0).setCellRenderer(FormatRenderer.getDateTimeRenderer());
+        table.getColumnModel().getColumn(0).setCellRenderer(FormatRenderer.getDateTimeRenderer());
         table.getColumnModel().getColumn(7).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         table.getColumnModel().getColumn(8).setCellRenderer(NumberRenderer.getCurrencyRenderer());
         
@@ -115,51 +78,29 @@ public class PurchaseTableView extends View {
         FlowLayout flowLayout2 = (FlowLayout) btmPanel.getLayout();
         flowLayout2.setAlignment(FlowLayout.RIGHT);
         add(btmPanel,BorderLayout.SOUTH);
-        
-        searchMessageLabel = new JLabel("");
-        btmPanel.add(searchMessageLabel);
-        
-        JLabel spacer = new JLabel("           ");
-        btmPanel.add(spacer);
-        
         totalForTableLabel = new JLabel("");
         btmPanel.add(totalForTableLabel);
 
     }
     
     public void initialize(){
-        searchMessageLabel.setText(getController().getPurchaseSearchQuery());
-        
+        ArrayList<Purchase> purchases = getController().getBackend().getPurchases();
+        ArrayList<Purchase> purchasesTableFormat = new ArrayList<Purchase>();
+        for(Purchase p : purchases){
+            for(CartItem ci: p.getItems()){
+                //Purchase(int id, ArrayList<CartItem> items, Date purchDate, String username)
+                ArrayList<CartItem> tempItemList = new ArrayList<CartItem>();
+                tempItemList.add(ci);
+                Purchase newPurchase =  new Purchase(p.getId(), tempItemList, p.getPurchaseDate(), p.getBuyer());
+                purchasesTableFormat.add(newPurchase);
+            }
+        }
         float total = 0f;
-        for(Purchase p : getController().getSearchPurchaseList()){
+        for(Purchase p : purchasesTableFormat){
             ptm.addRow(p);
             total+=p.totalForPurchase();
         }
         totalForTableLabel.setText("Grand Total for data in table: $"+total);
-        
-        btnFilter.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e) {
-                //filter by username
-                if(userRB.isSelected()){
-                    ArrayList<Purchase> res = getController().searchPurchaseList(searchTF.getText(),ShopController.PurchaseSearchType.USER_USERNAME);
-                    String item = searchTF.getText();
-                    getController().setPurchaseSearchQuery("Searching for User: " + item + "... ");
-                    getController().setSearchPurchaseList(res);
-                    getController().showPurchases();
-                    revalidate();
-                }
-                //filter by item name
-                if(itemNameRB.isSelected()){
-                    ArrayList<Purchase> res = getController().searchPurchaseList(searchTF.getText(),ShopController.PurchaseSearchType.PRODUCT_NAME);
-                    String item = searchTF.getText();
-                    getController().setPurchaseSearchQuery("Searching for Product name: " + item + "... ");
-                    getController().setSearchPurchaseList(res);
-                    getController().showPurchases();
-                    revalidate();
-                }
-                getController().resetSearchPurchaseList();
-            }
-        });
         
         btnBack.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
@@ -173,9 +114,7 @@ public class PurchaseTableView extends View {
         });
         btnReset.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-                getController().resetSearchPurchaseList();
                 getController().showPurchases();
-                revalidate();
             }
         });
     }
